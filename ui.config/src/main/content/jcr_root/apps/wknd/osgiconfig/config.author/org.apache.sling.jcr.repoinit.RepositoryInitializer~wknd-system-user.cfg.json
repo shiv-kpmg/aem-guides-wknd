@@ -1,8 +1,6 @@
 {
   "scripts" : [
     "create service user wknd-system-user",
-    "set ACL for wknd-system-user",
-    "allow jcr:all on /",
-    "end"
+    "add wknd-system-user to group administrators"
   ]
 }

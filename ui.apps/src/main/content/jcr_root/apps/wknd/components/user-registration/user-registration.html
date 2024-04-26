@@ -1,0 +1,26 @@
+<sly data-sly-test="${wcmmode.edit}">
+    <h2>${properties.jcr:title}</h2>
+</sly>
+
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.all @ categories='wknd.registration'}"></sly>
+</sly>
+
+<div class="registration-container">
+    <h2>Sign Up</h2>
+    <form>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Your name..">
+
+        <label for="name">Mobile No</label>
+        <input type="text" id="mobile" name="mobile" placeholder="Your mobile no..">
+
+        <label for="email">Email</label>
+        <input type="text" id="email" name="email" placeholder="Your email..">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Your password..">
+
+        <button class="registration-submit" type="submit">Register</button>
+    </form>
+</div>
