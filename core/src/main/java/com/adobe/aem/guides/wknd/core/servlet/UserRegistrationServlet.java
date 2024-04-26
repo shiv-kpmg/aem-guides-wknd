@@ -1,5 +1,6 @@
 package com.adobe.aem.guides.wknd.core.servlet;
 
+import com.google.gson.JsonObject;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
@@ -9,7 +10,9 @@ import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -21,20 +24,27 @@ import java.util.Map;
 import javax.jcr.*;
 import javax.servlet.Servlet;
 
-@Component(service = {Servlet.class}, property = {
-        "sling.servlet.methods=GET",
-        "sling.servlet.paths=/bin/user-registration"})
-public class UserRegistrationServlet extends SlingSafeMethodsServlet {
+@Component(service = Servlet.class)
+@SlingServletResourceTypes(
+        resourceTypes = "wknd/components/user-registration",
+        methods = {HttpConstants.METHOD_POST},
+        selectors = "register",
+        extensions = "json"
+)
+public class UserRegistrationServlet extends SlingAllMethodsServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserRegistrationServlet.class);
     private static final String SYSTEM_SUB_SERVICE = "wknd-sub-service";
     private static final String CONTENT_AUTHORS = "content-authors";
-    boolean creationFlag = true;
+
     @Reference
     private transient ResourceResolverFactory resourceResolverFactory;
 
     @Override
-    protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
+    protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) {
+
+        //User creation status
+        boolean creationFlag = true;
 
         // Create the Map that specifies the SubService ID
         Map<String, Object> authInfo = new HashMap<>();
@@ -48,11 +58,26 @@ public class UserRegistrationServlet extends SlingSafeMethodsServlet {
             Session session = resourceResolver.adaptTo(Session.class);
 
             //Reading the parameter from servlet request
-            String userFirstName = request.getParameter("userFirstName");
-            String userLastName = request.getParameter("userLastName");
-            String userEmail = request.getParameter("userEmail");
-            String userId = request.getParameter("userId");
-            String userPassword = request.getParameter("userPassword");
+            String userData = request.getParameter("userData");
+
+            //Split the string into key-value pairs
+            String[] keyValuePairs = userData.split("&");
+
+            //Create a map to store the extracted values
+            Map<String, String> valuesMap = new HashMap<>();
+
+            //Extract the values and store them in the map
+            for (String pair : keyValuePairs) {
+                String[] keyValue = pair.split("=");
+                String key = keyValue[0];
+                String value = keyValue[1];
+                valuesMap.put(key, value);
+            }
+
+            String userFirstName = valuesMap.get("userFirstName");
+            String userEmail = valuesMap.get("userEmail");
+            String userId = valuesMap.get("userId");
+            String userPassword = valuesMap.get("userPassword");
 
             //Checking if the User already exists
             UserManager userManager = resourceResolver.adaptTo(UserManager.class);
@@ -71,9 +96,6 @@ public class UserRegistrationServlet extends SlingSafeMethodsServlet {
                 ValueFactory valueFactory = session.getValueFactory();
                 Value firstNameValue = valueFactory.createValue(userFirstName, PropertyType.STRING);
                 createdUser.setProperty("./profile/givenName", firstNameValue);
-
-                Value lastNameValue = valueFactory.createValue(userLastName, PropertyType.STRING);
-                createdUser.setProperty("./profile/familyName", lastNameValue);
 
                 Value emailValue = valueFactory.createValue(userEmail, PropertyType.STRING);
                 createdUser.setProperty("./profile/email", emailValue);
@@ -95,7 +117,12 @@ public class UserRegistrationServlet extends SlingSafeMethodsServlet {
             //Response writer
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
-            response.getWriter().write("User created successfully with UserId :" + userId);
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("creationFlag", creationFlag);
+            jsonObject.addProperty("userId", userId);
+
+            response.getWriter().write(String.valueOf(jsonObject));
 
         } catch (LoginException | IOException | RepositoryException e) {
             LOGGER.error("Login exception for service: {}", e.getMessage());

@@ -1139,7 +1139,7 @@
                     jcr:primaryType="nt:unstructured"
                     jcr:title="WKND Site Theme"
                     sling:resourceType="wcm/core/components/policy/policy"
-                    clientlibs="[wknd.site,wknd.base]"
+                    clientlibs="[wknd.site,wknd.base,wknd-global]"
                     clientlibsJsHead="wknd.dependencies"
                     clientlibsAsync="true">
                     <jcr:content

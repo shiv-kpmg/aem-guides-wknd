@@ -91,7 +91,7 @@
                             jcr:primaryType="nt:unstructured"
                             jcr:title="SIGN UP"
                             sling:resourceType="wknd/components/form/button"
-                            name="sign-up"
+                            name="wknd-sign-up"
                             type="button">
                             <cq:responsive jcr:primaryType="nt:unstructured">
                                 <default

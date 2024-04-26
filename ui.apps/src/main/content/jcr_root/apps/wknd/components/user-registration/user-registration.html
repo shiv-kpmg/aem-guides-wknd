@@ -8,19 +8,35 @@
 
 <div class="registration-container">
     <h2>Sign Up</h2>
-    <form>
-        <label for="name">Name</label>
-        <input type="text" id="name" name="name" placeholder="Your name..">
+    <form class="wknd-registration-form" method="post">
+        <label for="userId">User Id</label>
+        <input type="text" id="userId" name="userId">
 
-        <label for="name">Mobile No</label>
-        <input type="text" id="mobile" name="mobile" placeholder="Your mobile no..">
+        <label for="userFirstName">Name</label>
+        <input type="text" id="userFirstName" name="userFirstName">
 
-        <label for="email">Email</label>
-        <input type="text" id="email" name="email" placeholder="Your email..">
+        <label for="userEmail">Email</label>
+        <input type="text" id="userEmail" name="userEmail">
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Your password..">
+        <label for="userPassword">Password</label>
+        <input type="password" id="userPassword" name="userPassword">
 
         <button class="registration-submit" type="submit">Register</button>
     </form>
+
+    <!--Success Popup Start-->
+    <div id="newuser-popup" class="success-popup d-none">
+        <div class="success-popup-content">
+            <button class="login-redirection">Successfully signed up. Continue to log in...</button>
+        </div>
+    </div>
+    <!--Success Popup End-->
+
+    <!--Success Popup Start-->
+    <div id="existing-popup" class="success-popup d-none">
+        <div class="success-popup-content">
+            <button class="login-redirection">Already existing account. Continue to log in...</button>
+        </div>
+    </div>
+    <!--Success Popup End-->
 </div>
